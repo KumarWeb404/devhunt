@@ -2,18 +2,21 @@ const Project = require('./../models/projectModel');
 
 exports.getProjects = async (req, res) => {
   Project.find(req.body)
+    .populate()
     .exec()
     .then((data) => {
-      res.status(200).json({
-        status: 'success',
-        message: 'All Projects fetched!',
+      res.send({
+        success: true,
+        status: 200,
         total: data.length,
+        message: 'All Projects fetched!',
         data,
       });
     })
     .catch((err) => {
-      res.status(500).send({
-        status: 'error',
+      res.send({
+        success: false,
+        status: 500,
         message: err.message,
       });
     });
@@ -62,7 +65,7 @@ exports.getProject = async (req, res) => {
 
 exports.createProject = async (req, res) => {
   const {
-    clientId,
+    userId,
     categoryId,
     name,
     technology,
@@ -73,8 +76,8 @@ exports.createProject = async (req, res) => {
 
   let validation = '';
 
-  if (!clientId) {
-    validation += 'clientId is Required. ';
+  if (!userId) {
+    validation += 'userId is Required. ';
   }
   if (!categoryId) {
     validation += 'categoryId is Required. ';
@@ -114,6 +117,8 @@ exports.createProject = async (req, res) => {
 
     project
       .save()
+      .populate('user')
+      .populate('category')
       .then((data) =>
         res.status(201).json({
           status: 'success',

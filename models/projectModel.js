@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
 const projectModel = mongoose.Schema({
-  clientId: {
-    type: Number,
-    default: 0,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null,
+    ref: 'user',
   },
   categoryId: {
-    type: Number,
-    default: 0,
+    type: mongoose.Schema.Types.ObjectId,
+    default: null,
+    ref: 'category',
   },
   autoId: {
     type: Number,
