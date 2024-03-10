@@ -1,8 +1,9 @@
 const Project = require('./../models/projectModel');
 
-exports.getProjects = async (req, res) => {
+exports.getAllProjects = async (req, res) => {
   Project.find(req.body)
-    .populate()
+    .populate('userId')
+    .populate('categoryId')
     .exec()
     .then((data) => {
       res.send({
@@ -155,7 +156,7 @@ exports.updateProject = (req, res) => {
           return res.send({
             success: false,
             status: 400,
-            message: 'Category does not exist',
+            message: 'Category does not exist!',
           });
         } else {
           if (!!req.body.name) data.name = req.body.name;
@@ -213,7 +214,7 @@ exports.deleteProject = (req, res) => {
           res.send({
             success: false,
             status: 400,
-            message: 'project does not exist',
+            message: 'Project does not exist!',
           });
         } else {
           data.status = false;

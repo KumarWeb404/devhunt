@@ -1,20 +1,179 @@
 const Category = require('./../models/categoryModel');
 
-exports.createCategory = async (req, res) => {
-  const totalCategory = await Category.countDocuments();
-  const { name } = req.body;
-  let category = new Category();
-  category.autoId = totalCategory + 1;
-  category.name = name;
-
-  category.save().then((data) => {
-    res.send({
-      success: true,
-      status: 201,
-      message: 'New category created!!',
-      data: {
-        category,
-      },
+exports.getAllCategory = (req, res) => {
+  req.body.status = true;
+  Category.find(req.body)
+    .exec()
+    .then((categoryData) => {
+      res.send({
+        success: true,
+        status: 200,
+        message: 'All Categories found!',
+        data: {
+          categories: categoryData,
+        },
+      });
+    })
+    .catch((err) => {
+      res.send({
+        success: false,
+        status: 500,
+        message: err.message,
+      });
     });
-  });
+};
+
+exports.createCategory = async (req, res) => {
+  let validation = '';
+
+  if (!req.body.name) {
+    validation += 'Category name is required.';
+  }
+
+  if (!!validation) {
+    res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    const totalCategory = await Category.countDocuments();
+    const { name } = req.body;
+    let category = new Category();
+    category.autoId = totalCategory + 1;
+    category.name = name;
+
+    category
+      .save()
+      .then((newCategory) => {
+        res.send({
+          success: true,
+          status: 201,
+          message: 'New category created!!',
+          data: {
+            category: newCategory,
+          },
+        });
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
+};
+exports.updateCategory = (req, res) => {
+  let validation = '';
+
+  if (!req.body._id) {
+    validation += 'id is required.';
+  }
+
+  if (!!validation) {
+    return res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    Category.findOne({ _id: req.body._id })
+      .exec()
+      .then((categoryData) => {
+        if (categoryData == null) {
+          res.send({
+            success: false,
+            status: 404,
+            message: 'Category does not exists!',
+          });
+        } else {
+          if (!!req.body.name) {
+            categoryData.name = req.body.name;
+          }
+          categoryData
+            .save()
+            .then((updatedCategory) => {
+              res.send({
+                success: true,
+                status: 200,
+                message: 'Category updated!',
+                data: {
+                  category: updatedCategory,
+                },
+              });
+            })
+            .catch((err) => {
+              res.send({
+                success: false,
+                status: 500,
+                message: err.message,
+              });
+            });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
+};
+exports.deleteCategory = (req, res) => {
+  let validation = '';
+
+  if (!req.body._id) {
+    validation += 'id is required.';
+  }
+
+  if (!!validation) {
+    res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    Category.findOne({ _id: req.body._id })
+      .exec()
+      .then((categoryData) => {
+        if (categoryData == nul) {
+          res.send({
+            success: false,
+            status: 404,
+            message: 'Category does not exist!',
+          });
+        } else {
+          categoryData.status = false;
+
+          categoryData
+            .save()
+            .then((deletedCategory) => {
+              res.send({
+                success: true,
+                status: 200,
+                message: 'Category deleted!',
+                data: {
+                  category: deletedCategory,
+                },
+              });
+            })
+            .catch((err) => {
+              res.send({
+                success: false,
+                status: 500,
+                message: err.message,
+              });
+            });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
 };

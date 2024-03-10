@@ -19,7 +19,7 @@ const userModel = mongoose.Schema({
   },
   userType: {
     type: Number,
-    default: 0,
+    default: 3, //* 1.Admin, 2.Client, 3.Freelancer
   },
   createdAt: {
     type: Date,

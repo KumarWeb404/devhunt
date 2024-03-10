@@ -1,14 +1,24 @@
+const freelancerController = require('./../controllers/freelancerController');
 const projectController = require('./../controllers/projectController');
-const categoryController = require('./../controllers/categoryController');
+const clientController = require('./../controllers/clientController');
 const express = require('express');
 
 const router = express.Router();
 
-router.post('/project/all', projectController.getProjects);
+//Project
+router.post('/project/all', projectController.getAllProjects);
 router.post('/project/single', projectController.getProject);
 router.post('/project/create', projectController.createProject);
 router.post('/project/delete', projectController.deleteProject);
 
-router.post('/category/create', categoryController.createCategory);
+//Freelancer
+router.post('/freelancer/register', freelancerController.register);
+router.post('/freelancer/all', freelancerController.getAllFreelancers);
+router.post('/freelancer/single', freelancerController.getFreelancer);
+
+//Client
+router.post('/client/register', clientController.register);
+router.post('/client/all', clientController.getAllClients);
+router.post('/client/single', clientController.getClient);
 
 module.exports = router;
