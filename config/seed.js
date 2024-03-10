@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const bcrypt = require('bcrypt');
 
 User.findOne({ email: 'admin@gmail.com' })
   .exec()
@@ -8,7 +9,7 @@ User.findOne({ email: 'admin@gmail.com' })
       admin.autoId = 1;
       admin.name = 'Admin';
       admin.email = 'admin@gmail.com';
-      admin.password = '1234';
+      admin.password = bcrypt.hashSync('1234', 10);
       admin.userType = 1;
 
       admin
