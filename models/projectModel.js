@@ -35,7 +35,10 @@ const projectModel = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  attachment: [],
+  attachment: {
+    type: String,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

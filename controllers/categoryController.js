@@ -23,6 +23,50 @@ exports.getAllCategory = (req, res) => {
     });
 };
 
+exports.getCategory = (req, res) => {
+  let validation = '';
+
+  if (!req.body._id) {
+    validation += 'id is required.';
+  }
+
+  if (!!validation) {
+    return res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    Category.findOne({ _id: req.body._id })
+      .exec()
+      .then((categoryData) => {
+        if (categoryData == null) {
+          return res.send({
+            success: false,
+            status: 404,
+            message: 'Category does not exist!',
+          });
+        } else {
+          return res.send({
+            success: true,
+            status: 200,
+            message: 'Category found!',
+            data: {
+              category: categoryData,
+            },
+          });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
+};
+
 exports.createCategory = async (req, res) => {
   let validation = '';
 

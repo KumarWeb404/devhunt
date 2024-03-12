@@ -1,14 +1,17 @@
-const adminRouter = require('./routes/adminRoutes');
-const userRouter = require('./routes/userRoutes');
 const express = require('express');
 const db = require('./config/db');
 const seed = require('./config/seed');
+
+const adminRouter = require('./routes/adminRoutes');
+const clientRouter = require('./routes/clientRoutes');
+const freelancerRouter = require('./routes/freelancerRoutes');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/admin', adminRouter);
-app.use('/user', userRouter);
+app.use('/client', clientRouter);
+app.use('/freelancer', freelancerRouter);
 
 const PORT = 3000;
 app.listen(PORT, () => {

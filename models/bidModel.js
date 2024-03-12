@@ -20,6 +20,10 @@ const bidModel = mongoose.Schema({
     default: null,
     ref: 'freelancer',
   },
+  bidAmount: {
+    type: Number,
+    default: 0,
+  },
   poc: [String],
   description: {
     type: String,
