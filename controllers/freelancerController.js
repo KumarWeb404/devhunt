@@ -146,3 +146,108 @@ exports.getFreelancer = (req, res) => {
       });
   }
 };
+
+exports.updateFreelancer = (req, res) => {
+  let validation = '';
+
+  if (!req.body._id) {
+    validation += 'id is required. ';
+  }
+
+  if (!!validation) {
+    return res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    User.findOne({ _id: req.body._id })
+      .exec()
+      .then((userData) => {
+        if (userData == null) {
+          return res.send({
+            success: false,
+            status: 404,
+            message: 'User not found!',
+          });
+        } else {
+          if (!!req.body.name) {
+            userData.name = req.body.name;
+          }
+          if (!!req.body.email) {
+            userData.email = req.body.email;
+          }
+
+          userData
+            .save()
+            .then((updatedUser) => {
+              Freelancer.findOne({ userId: updatedUser._id })
+                .exec()
+                .then((freelancerData) => {
+                  if (freelancerData == null) {
+                    return res.send({
+                      success: false,
+                      status: 404,
+                      id: updatedUser._id,
+                      message: 'Freelancer not found!',
+                    });
+                  } else {
+                    if (!!req.body.name) {
+                      freelancerData.name = req.body.name;
+                    }
+                    if (!!req.body.email) {
+                      freelancerData.email = req.body.email;
+                    }
+                    if (!!req.body.contact) {
+                      freelancerData.contact = req.body.contact;
+                    }
+                    if (!!req.body.categoryId) {
+                      freelancerData.categoryId = req.body.categoryId;
+                    }
+                    freelancerData
+                      .save()
+                      .then((updatedFreelancer) => {
+                        res.send({
+                          success: true,
+                          status: 200,
+                          message: 'Freelancer Updated!',
+                          data: {
+                            freelancer: updatedFreelancer,
+                          },
+                        });
+                      })
+                      .catch((err) => {
+                        res.send({
+                          success: false,
+                          status: 500,
+                          message: err.message,
+                        });
+                      });
+                  }
+                })
+                .catch((err) => {
+                  res.send({
+                    success: false,
+                    status: 500,
+                    message: err.message,
+                  });
+                });
+            })
+            .catch((err) => {
+              res.send({
+                success: false,
+                status: 500,
+                message: err.message,
+              });
+            });
+        }
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
+};

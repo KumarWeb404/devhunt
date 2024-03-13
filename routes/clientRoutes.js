@@ -8,6 +8,7 @@ const router = express.Router();
 
 //Login
 router.post('/login', userController.login);
+router.post('/change-password', userController.changePassword);
 
 //Register
 router.post('/register', clientController.register);

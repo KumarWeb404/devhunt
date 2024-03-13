@@ -11,6 +11,7 @@ router.post('/login', userController.login);
 
 //Register
 router.post('/register', freelancerController.register);
+router.post('/update', freelancerController.updateFreelancer);
 
 //Project
 router.post('/project/all', projectController.getAllProjects);
