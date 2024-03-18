@@ -1,5 +1,7 @@
 const User = require('./../models/userModel');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const SECRET = 'this-is-ultra-secret-@#$%^%$#@QSDFGT';
 
 exports.login = (req, res) => {
   let validation = '';
@@ -30,6 +32,11 @@ exports.login = (req, res) => {
         } else {
           if (bcrypt.compareSync(req.body.password, userData.password)) {
             if (userData.status) {
+              const payload = {
+                name: userData.name,
+                email: userData.email,
+              };
+              const token = jwt.sign(payload, SECRET, { expiresIn: '5h' });
               return res.send({
                 success: true,
                 status: 200,
@@ -37,6 +44,7 @@ exports.login = (req, res) => {
                 data: {
                   user: userData,
                 },
+                token,
               });
             } else {
               return res.send({
@@ -120,6 +128,65 @@ exports.changePassword = (req, res) => {
               message: 'Invalid Password!',
             });
           }
+        }
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
+};
+
+exports.changeStatus = (req, res) => {
+  let validation = '';
+
+  if (!req.body._id) {
+    validation += 'id is required. ';
+  }
+  if (!req.body.status) {
+    validation += 'status is required. ';
+  }
+  if (!!validation) {
+    return res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    User.findOne({ _id: req.body._id })
+      .exec()
+      .then((user) => {
+        if (user == null) {
+          return res.send({
+            success: false,
+            status: 400,
+            message: 'User not found!',
+          });
+        } else {
+          user.status = req.body.status;
+
+          user
+            .save()
+            .then((updatedUser) => {
+              res.send({
+                success: true,
+                status: 200,
+                message: 'User Status Updated!',
+                data: {
+                  user: updatedUser,
+                },
+              });
+            })
+            .catch((err) => {
+              res.send({
+                success: false,
+                status: 500,
+                message: err.message,
+              });
+            });
         }
       })
       .catch((err) => {

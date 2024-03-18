@@ -24,7 +24,7 @@ const bidModel = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  poc: [String],
+  poc: String,
   description: {
     type: String,
     default: '',
@@ -42,3 +42,7 @@ const bidModel = mongoose.Schema({
     default: true,
   },
 });
+
+const Bid = mongoose.model('bid', bidModel);
+
+module.exports = Bid;

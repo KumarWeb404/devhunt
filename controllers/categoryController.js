@@ -124,7 +124,7 @@ exports.updateCategory = (req, res) => {
   } else {
     Category.findOne({ _id: req.body._id })
       .exec()
-      .then((categoryData) => {
+      .then(async (categoryData) => {
         if (categoryData == null) {
           res.send({
             success: false,
@@ -135,25 +135,36 @@ exports.updateCategory = (req, res) => {
           if (!!req.body.name) {
             categoryData.name = req.body.name;
           }
-          categoryData
-            .save()
-            .then((updatedCategory) => {
-              res.send({
-                success: true,
-                status: 200,
-                message: 'Category updated!',
-                data: {
-                  category: updatedCategory,
-                },
+          const prevCategory = await Category.findOne({
+            $and: [{ _id: { $ne: req.body._id } }, { name: req.body.name }],
+          });
+          if (!prevCategory) {
+            categoryData
+              .save()
+              .then((updatedCategory) => {
+                res.send({
+                  success: true,
+                  status: 200,
+                  message: 'Category updated!',
+                  data: {
+                    category: updatedCategory,
+                  },
+                });
+              })
+              .catch((err) => {
+                res.send({
+                  success: false,
+                  status: 500,
+                  message: err.message,
+                });
               });
-            })
-            .catch((err) => {
-              res.send({
-                success: false,
-                status: 500,
-                message: err.message,
-              });
+          } else {
+            return res.send({
+              success: false,
+              status: 400,
+              message: 'Category already exist!',
             });
+          }
         }
       })
       .catch((err) => {
@@ -165,7 +176,7 @@ exports.updateCategory = (req, res) => {
       });
   }
 };
-exports.deleteCategory = (req, res) => {
+exports.changeStatus = (req, res) => {
   let validation = '';
 
   if (!req.body._id) {

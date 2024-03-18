@@ -18,6 +18,7 @@ const chatModel = mongoose.Schema({
       fromId: {
         type: mongoose.Schema.Types.ObjectId,
         default: null,
+        ref: 'user',
       },
       message: {
         type: String,

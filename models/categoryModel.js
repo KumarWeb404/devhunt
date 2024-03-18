@@ -5,6 +5,10 @@ const categoryModel = mongoose.Schema({
     type: Number,
     default: 0,
   },
+  photo: {
+    type: String,
+    default: '',
+  },
   name: {
     type: String,
     default: '',

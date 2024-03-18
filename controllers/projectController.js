@@ -2,6 +2,7 @@ const Project = require('./../models/projectModel');
 
 exports.getAllProjects = async (req, res) => {
   Project.find(req.body)
+    .sort({ createdAt: -1 })
     .populate('userId')
     .populate('categoryId')
     .exec()
@@ -107,7 +108,7 @@ exports.createProject = async (req, res) => {
   } else {
     const totalProjects = await Project.countDocuments();
     let project = new Project();
-    project.clientId = clientId;
+    project.userId = userId;
     project.autoId = totalProjects + 1;
     project.categoryId = categoryId;
     project.name = name;
@@ -118,8 +119,6 @@ exports.createProject = async (req, res) => {
 
     project
       .save()
-      .populate('user')
-      .populate('category')
       .then((data) =>
         res.status(201).json({
           status: 'success',
@@ -194,7 +193,7 @@ exports.updateProject = (req, res) => {
   }
 };
 
-exports.deleteProject = (req, res) => {
+exports.delete = (req, res) => {
   let validation = '';
   if (!req.body._id) {
     validation += '_id is Required.';

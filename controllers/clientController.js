@@ -145,3 +145,124 @@ exports.getClient = (req, res) => {
       });
   }
 };
+
+exports.updateClient = (req, res) => {
+  let validation = '';
+
+  if (!req.body._id) {
+    validation += 'id is required. ';
+  }
+
+  if (!!validation) {
+    return res.send({
+      success: false,
+      status: 400,
+      message: 'Validation Error: ' + validation,
+    });
+  } else {
+    User.findOne({ _id: req.body._id })
+      .exec()
+      .then(async (userData) => {
+        if (userData == null) {
+          return res.send({
+            success: false,
+            status: 404,
+            message: 'User not found!',
+          });
+        } else {
+          if (!!req.body.name) {
+            userData.name = req.body.name;
+          }
+          if (!!req.body.email) {
+            userData.email = req.body.email;
+          }
+          const prevUser = await User.findOne({
+            $and: [{ _id: { $ne: req.body._id } }, { email: req.body.email }],
+          });
+          if (!prevUser) {
+            userData
+              .save()
+              .then((updatedUser) => {
+                Client.findOne({ userId: updatedUser._id })
+                  .exec()
+                  .then((clientData) => {
+                    if (clientData == null) {
+                      return res.send({
+                        success: false,
+                        status: 404,
+                        id: updatedUser._id,
+                        message: 'Client not found!',
+                      });
+                    } else {
+                      if (!!req.body.name) {
+                        clientData.name = req.body.name;
+                      }
+                      if (!!req.body.email) {
+                        clientData.email = req.body.email;
+                      }
+                      if (!!req.body.contact) {
+                        clientData.contact = req.body.contact;
+                      }
+                      if (!!req.body.country) {
+                        clientData.country = req.body.country;
+                      }
+                      if (!!req.body.companyName) {
+                        clientData.companyName = req.body.companyName;
+                      }
+                      if (!!req.body.address) {
+                        clientData.address = req.body.address;
+                      }
+                      clientData
+                        .save()
+                        .then((updatedClient) => {
+                          res.send({
+                            success: true,
+                            status: 200,
+                            message: 'Client Updated!',
+                            data: {
+                              client: updatedClient,
+                            },
+                          });
+                        })
+                        .catch((err) => {
+                          res.send({
+                            success: false,
+                            status: 500,
+                            message: err.message,
+                          });
+                        });
+                    }
+                  })
+                  .catch((err) => {
+                    res.send({
+                      success: false,
+                      status: 500,
+                      message: err.message,
+                    });
+                  });
+              })
+              .catch((err) => {
+                res.send({
+                  success: false,
+                  status: 500,
+                  message: err.message,
+                });
+              });
+          } else {
+            return res.send({
+              success: false,
+              status: 400,
+              message: 'Client already exist!',
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        res.send({
+          success: false,
+          status: 500,
+          message: err.message,
+        });
+      });
+  }
+};

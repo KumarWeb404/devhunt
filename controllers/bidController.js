@@ -67,6 +67,7 @@ exports.createBid = async (req, res) => {
 exports.getAllBids = (req, res) => {
   req.body.status = true;
   Bid.find(req.body)
+    .sort({ createdAt: -1 })
     .exec()
     .then((bids) => {
       res.send({
